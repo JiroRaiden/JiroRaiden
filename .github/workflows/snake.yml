@@ -1,9 +1,9 @@
-name: Generate contribution snake
+name: Generate profile art
 
 on:
   schedule:
-    - cron: "0 0 * * *"   # once a day
-  workflow_dispatch:      # lets you run it manually from the Actions tab
+    - cron: "0 0 * * *"
+  workflow_dispatch:
   push:
     branches: [main]
 
@@ -14,15 +14,20 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate snake SVGs
+      - uses: actions/checkout@v4
+
+      - name: Build glitch avatar
+        run: python3 scripts/glitch_avatar.py --user "${{ github.repository_owner }}" --out dist/glitch-avatar.svg
+
+      - name: Build contribution snake
         uses: Platane/snk@v3
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            dist/github-snake.svg
-            dist/github-snake-dark.svg?palette=github-dark&color_snake=#D4A017&color_dots=#161b22,#3d2e00,#7a5c00,#b8860b,#FFD700
+            dist/github-snake.svg?color_snake=#ff2a6d&color_dots=#ebedf0,#c7f5fa,#05d9e8,#b14aed,#ff2a6d
+            dist/github-snake-dark.svg?palette=github-dark&color_snake=#ff2a6d&color_dots=#161b22,#2b0a4a,#7700ff,#d300c5,#05d9e8
 
-      - name: Push SVGs to the output branch
+      - name: Push to the output branch
         uses: crazy-max/ghaction-github-pages@v4
         with:
           target_branch: output
