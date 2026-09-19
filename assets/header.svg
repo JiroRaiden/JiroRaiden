@@ -17,6 +17,17 @@
     .cursor { animation: blink 1s steps(1, end) infinite; }
     .blinkhud { animation: blink 2.4s steps(1, end) infinite; }
 
+    /* border run: plays once when the image loads, then holds its final state */
+    .trail { stroke-dasharray: 50 60; stroke-dashoffset: 50; animation: draw 2.2s cubic-bezier(.6,0,.3,1) .3s forwards; }
+    .head  { stroke-dasharray: 1.5 60; stroke-dashoffset: 1.5; opacity: 0;
+              animation: runhead 2.2s cubic-bezier(.6,0,.3,1) .3s forwards; }
+    .lit   { animation: flash .9s ease-out 2.5s forwards, breathe 4s ease-in-out 3.4s infinite; }
+    @keyframes draw    { to { stroke-dashoffset: 0 } }
+    @keyframes runhead { 0% { opacity: 1; stroke-dashoffset: 1.5 } 95% { opacity: 1 }
+                          100% { opacity: 0; stroke-dashoffset: -48.5 } }
+    @keyframes flash   { 0% { opacity: 1 } 15% { opacity: .3 } 30% { opacity: 1 } 45% { opacity: .5 } 100% { opacity: 1 } }
+    @keyframes breathe { 0%, 100% { opacity: 1 } 50% { opacity: .6 } }
+
     @keyframes floor { from { transform: translateY(0) } to { transform: translateY(6px) } }
     @keyframes sunpulse { 0%,100% { opacity: .55 } 50% { opacity: .85 } }
     @keyframes blink { 0% { opacity: 1 } 50% { opacity: 0 } }
@@ -40,6 +51,11 @@
       <stop offset="0" stop-color="#05000f"/>
       <stop offset=".7" stop-color="#1a0033"/>
       <stop offset="1" stop-color="#2d0050"/>
+    </linearGradient>
+    <linearGradient id="edge" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1000" y2="0">
+      <stop offset="0" stop-color="#05d9e8"/>
+      <stop offset=".5" stop-color="#7700ff"/>
+      <stop offset="1" stop-color="#ff2a6d"/>
     </linearGradient>
     <linearGradient id="sunG" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ff2a6d"/>
@@ -104,5 +120,15 @@
     <!-- scanlines over everything -->
     <rect width="1000" height="300" fill="url(#scan)" opacity=".18"/>
   </g>
-  <rect x="1" y="1" width="998" height="298" rx="14" fill="none" stroke="#7700ff" stroke-width="2" opacity=".8"/>
+
+  <!-- BORDER RUN: on load, two neon lines leave the top-centre, race round the edge in opposite
+       directions and meet at the bottom; the border then flashes and stays lit.
+       pathLength="50" makes each half-perimeter exactly 50 units, so the dash maths is simple. -->
+  <rect x="3" y="3" width="994" height="294" rx="14" fill="none" stroke="#7700ff" stroke-width="2" opacity=".35"/>
+  <g class="lit" fill="none" stroke-linecap="round">
+    <path class="trail" pathLength="50" d="M500.0 3 H983 A14 14 0 0 1 997 17 V283 A14 14 0 0 1 983 297 H500.0" stroke="url(#edge)" stroke-width="4.5" filter="url(#softglow)"/>
+    <path class="trail" pathLength="50" d="M500.0 3 H17 A14 14 0 0 0 3 17 V283 A14 14 0 0 0 17 297 H500.0"  stroke="url(#edge)" stroke-width="4.5" filter="url(#softglow)"/>
+  </g>
+  <path class="head" pathLength="50" d="M500.0 3 H983 A14 14 0 0 1 997 17 V283 A14 14 0 0 1 983 297 H500.0" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" filter="url(#glow)"/>
+  <path class="head" pathLength="50" d="M500.0 3 H17 A14 14 0 0 0 3 17 V283 A14 14 0 0 0 17 297 H500.0"  fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" filter="url(#glow)"/>
 </svg>
